@@ -19766,6 +19766,7 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      note: 60,
+	      lastNote: 60,
 	      vcfCutoff: 10000,
 	      vcfResonance: 1,
 	      envDecay: 1,
@@ -19776,11 +19777,16 @@
 	  handleChange: function handleChange(data) {
 	    this.setState(data);
 	  },
+	  handleMidiMessage: function handleMidiMessage(data) {
+	    if (data[0] === 144) this.handleNoteOn(data);
+	    if (data[0] === 128) this.handleNoteOff(data);
+	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { className: 'js101' },
-	      React.createElement(MidiInput, null),
+	      React.createElement(MidiInput, {
+	        onMessage: this.handleMidiMessage }),
 	      React.createElement(FilterPanel, {
 	        cutoff: this.state.vcfCutoff,
 	        resonance: this.state.vcfResonance,
@@ -20002,12 +20008,33 @@
 /* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var React = __webpack_require__(1);
 	
 	var MidiInput = React.createClass({
-	  displayName: 'MidiInput',
+	  displayName: "MidiInput",
+	  componentDidMount: function componentDidMount() {
+	    if (navigator.requestMIDIAccess) {
+	      navigator.requestMIDIAccess({
+	        sysex: false
+	      }).then(this.onMIDISuccess, this.onMIDIFailure);
+	    } else {
+	      alert("No MIDI support. Sad :(");
+	    }
+	  },
+	  onMIDISuccess: function onMIDISuccess(midi) {
+	    var inputs = midi.inputs.values();
+	    for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+	      input.value.onmidimessage = this.onMIDIMessage;
+	    }
+	  },
+	  onMIDIFailure: function onMIDIFailure(error) {
+	    alert("No MIDI devices found. Sad :(");
+	  },
+	  onMIDIMessage: function onMIDIMessage(message) {
+	    this.props.onMessage(message.data);
+	  },
 	  render: function render() {
 	    return null;
 	  }

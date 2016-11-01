@@ -6,9 +6,12 @@ var EnvelopePanel = require('./EnvelopePanel');
 
 var JS101 = React.createClass({
 
+
+
   getInitialState() {
     return {
       note: 60,
+      lastNote: 60,
       vcfCutoff: 10000,
       vcfResonance: 1,
       envDecay: 1,
@@ -21,10 +24,16 @@ var JS101 = React.createClass({
     this.setState( data );
   },
 
+  handleMidiMessage( data ) {
+    if( data[0] === 144 ) this.handleNoteOn( data );
+    if( data[0] === 128 ) this.handleNoteOff( data );
+  },
+
   render() {
     return (
       <div className="js101">
-        <MidiInput />
+        <MidiInput 
+          onMessage={this.handleMidiMessage}/>
         <FilterPanel 
           cutoff={this.state.vcfCutoff}
           resonance={this.state.vcfResonance}
