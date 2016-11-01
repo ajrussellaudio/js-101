@@ -19763,34 +19763,26 @@
 	  displayName: 'JS101',
 	  getInitialState: function getInitialState() {
 	    return {
-	      vco: {
-	        waveform: "sawtooth",
-	        note: 60
-	      },
-	      vcf: {
-	        cutoff: 10000,
-	        resonance: 1
-	      },
-	      env: {
-	        decay: 0.1,
-	        mod: 0
-	      },
-	      vca: {
-	        level: 0
-	      }
+	      note: 60,
+	      vcoWaveform: "sawtooth",
+	      vcfCutoff: 10000,
+	      vcfResonance: 1,
+	      envDecay: 0.1,
+	      envMod: 0,
+	      level: 0
 	    };
 	  },
-	  handleFilterChange: function handleFilterChange(data) {
-	    console.log(data);
+	  handleChange: function handleChange(data) {
+	    this.setState(data);
 	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
 	      { className: 'js101' },
 	      React.createElement(FilterPanel, {
-	        vcf: this.state.vcf,
-	        env: this.state.env,
-	        onChange: this.handleFilterChange })
+	        cutoff: this.state.vcfCutoff,
+	        resonance: this.state.vcfResonance,
+	        onChange: this.handleChange })
 	    );
 	  }
 	});
@@ -19810,17 +19802,11 @@
 	
 	var FilterPanel = React.createClass({
 	  displayName: 'FilterPanel',
-	  getInitialState: function getInitialState() {
-	    return {
-	      cutoff: this.props.vcf.cutoff,
-	      resonance: this.props.vcf.resonance
-	    };
-	  },
 	  handleCutoffChange: function handleCutoffChange(newFreq) {
-	    this.setState({ cutoff: newFreq });
+	    this.props.onChange({ vcfCutoff: newFreq });
 	  },
 	  handleResonanceChange: function handleResonanceChange(newRes) {
-	    this.setState({ resonance: newRes });
+	    this.props.onChange({ vcfResonance: newRes });
 	  },
 	  render: function render() {
 	    return React.createElement(
@@ -19831,13 +19817,13 @@
 	        min: 20,
 	        max: 20000,
 	        onChange: this.handleCutoffChange,
-	        'default': this.state.cutoff }),
+	        'default': this.props.cutoff }),
 	      React.createElement(LinSlider, {
 	        name: 'res',
 	        min: 1,
 	        max: 10,
 	        onChange: this.handleResonanceChange,
-	        'default': this.state.resonance })
+	        'default': this.props.resonance })
 	    );
 	  }
 	});

@@ -6,35 +6,28 @@ var JS101 = React.createClass({
 
   getInitialState() {
     return {
-      vco: {
-        waveform: "sawtooth",
-        note: 60,
-      },
-      vcf: {
-        cutoff: 10000,
-        resonance: 1
-      },
-      env: {
-        decay: 0.1,
-        mod: 0
-      },
-      vca: {
-        level: 0
-      }
+      note: 60,
+      vcoWaveform: "sawtooth",
+      vcfCutoff: 10000,
+      vcfResonance: 1,
+      envDecay: 0.1,
+      envMod: 0,
+      level: 0
     }
   },
 
-  handleFilterChange( data ) {
-    console.log(data)
+  handleChange( data ) {
+    this.setState( data );
   },
 
   render() {
     return (
       <div className="js101">
         <FilterPanel 
-          vcf={this.state.vcf}
-          env={this.state.env}
-          onChange={this.handleFilterChange}/>
+          cutoff={this.state.vcfCutoff}
+          resonance={this.state.vcfResonance}
+          onChange={this.handleChange}/>
+
       </div>
     )
   }
