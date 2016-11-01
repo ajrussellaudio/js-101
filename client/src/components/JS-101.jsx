@@ -1,5 +1,7 @@
 var React = require('react');
 
+var FilterPanel = require('./FilterPanel')
+
 var JS101 = React.createClass({
 
   getInitialState() {
@@ -12,6 +14,10 @@ var JS101 = React.createClass({
         cutoff: 10000,
         resonance: 1
       },
+      env: {
+        decay: 0.1,
+        mod: 0
+      },
       vca: {
         level: 0
       }
@@ -19,7 +25,13 @@ var JS101 = React.createClass({
   }
 
   render() {
-    return <div>I am JS-101</div>
+    return (
+      <div className="js101">
+        <FilterPanel 
+          defaults={this.state.vcf}
+          onChange={this.handleFilterChange}/>
+      </div>
+    )
   }
 
 })
