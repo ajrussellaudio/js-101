@@ -19794,7 +19794,7 @@
 	    newNotes.splice(index, 1);
 	    var newLevel = newNotes.length ? 1 : 0;
 	    this.setState({
-	      notes: newNotes.reverse(),
+	      notes: newNotes,
 	      level: newLevel
 	    });
 	  },
@@ -19811,7 +19811,8 @@
 	      React.createElement(EnvelopePanel, {
 	        decay: this.state.envDecay,
 	        onChange: this.handleChange }),
-	      React.createElement(SynthEngine, null)
+	      React.createElement(SynthEngine, {
+	        params: this.state })
 	    );
 	  }
 	});
@@ -20070,6 +20071,20 @@
 	
 	var SynthEngine = React.createClass({
 	  displayName: 'SynthEngine',
+	  getInitialState: function getInitialState() {
+	    return {
+	      frequency: 0
+	    };
+	  },
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	    var notes = nextProps.params.notes.reverse();
+	    var noteFrequency = this.midiNoteToHz(notes[0]);
+	    this.setState({ frequency: noteFrequency });
+	  },
+	  midiNoteToHz: function midiNoteToHz(midiNote) {
+	    // Thanks, Wikipedia!
+	    return Math.pow(2, (midiNote - 69) / 12) * 440;
+	  },
 	  render: function render() {
 	    return null;
 	  }

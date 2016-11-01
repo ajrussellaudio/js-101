@@ -41,7 +41,7 @@ var JS101 = React.createClass({
     newNotes.splice(index, 1);
     var newLevel = newNotes.length ? 1 : 0
     this.setState({
-      notes: newNotes.reverse(),
+      notes: newNotes,
       level: newLevel
     })
   },
@@ -59,7 +59,7 @@ var JS101 = React.createClass({
           decay={this.state.envDecay}
           onChange={this.handleChange} />
         <SynthEngine
-          />
+          params={this.state}/>
       </div>
     )
   }
