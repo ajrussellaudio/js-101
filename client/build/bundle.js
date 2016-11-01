@@ -49,12 +49,10 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	
+	var JS101 = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./components/JS-101\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	
 	window.onload = function () {
-	  ReactDOM.render(React.createElement(
-	    'h1',
-	    null,
-	    ' App Started '
-	  ), document.getElementById('app'));
+	  ReactDOM.render(React.createElement(JS101, null), document.getElementById('app'));
 	};
 
 /***/ },
