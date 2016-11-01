@@ -19757,10 +19757,10 @@
 	
 	var React = __webpack_require__(1);
 	
-	var MidiInput = __webpack_require__(164);
-	var FilterPanel = __webpack_require__(160);
-	var EnvelopePanel = __webpack_require__(163);
-	var SynthEngine = __webpack_require__(165);
+	var MidiInput = __webpack_require__(160);
+	var FilterPanel = __webpack_require__(163);
+	var EnvelopePanel = __webpack_require__(165);
+	var SynthEngine = __webpack_require__(166);
 	
 	var JS101 = React.createClass({
 	  displayName: 'JS101',
@@ -19823,111 +19823,42 @@
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-	
-	var React = __webpack_require__(1);
-	
-	var LogSlider = __webpack_require__(161);
-	var LinSlider = __webpack_require__(162);
-	
-	var FilterPanel = React.createClass({
-	  displayName: 'FilterPanel',
-	  handleCutoffChange: function handleCutoffChange(newFreq) {
-	    this.props.onChange({ vcfCutoff: newFreq });
-	  },
-	  handleResonanceChange: function handleResonanceChange(newRes) {
-	    this.props.onChange({ vcfResonance: newRes });
-	  },
-	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      { className: 'synthModule' },
-	      React.createElement(LogSlider, {
-	        name: 'cutoff',
-	        min: 20,
-	        max: 20000,
-	        onChange: this.handleCutoffChange,
-	        'default': this.props.cutoff }),
-	      React.createElement(LinSlider, {
-	        name: 'res',
-	        min: 1,
-	        max: 40,
-	        onChange: this.handleResonanceChange,
-	        'default': this.props.resonance })
-	    );
-	  }
-	});
-	
-	module.exports = FilterPanel;
-
-/***/ },
-/* 161 */
-/***/ function(module, exports, __webpack_require__) {
-
 	"use strict";
 	
-	// mostly taken from Stack Overflow, adapted for React
-	// http://stackoverflow.com/questions/846221/logarithmic-slider
-	
 	var React = __webpack_require__(1);
 	
-	var LogSlider = React.createClass({
-	  displayName: "LogSlider",
-	
-	
-	  getInitialState: function getInitialState() {
-	    var minlval = Math.log(this.props.min);
-	    var maxlval = Math.log(this.props.max);
-	    var scale = maxlval - minlval;
-	    return {
-	      minlval: minlval,
-	      maxlval: maxlval,
-	      scale: scale
-	    };
+	var MidiInput = React.createClass({
+	  displayName: "MidiInput",
+	  componentDidMount: function componentDidMount() {
+	    if (navigator.requestMIDIAccess) {
+	      navigator.requestMIDIAccess({
+	        sysex: false
+	      }).then(this.onMIDISuccess, this.onMIDIFailure);
+	    } else {
+	      alert("No MIDI support. Sad :(");
+	    }
 	  },
-	
-	  handleChange: function handleChange(event) {
-	    var value = this.logValue(event.target.value);
-	    this.props.onChange(value);
+	  onMIDISuccess: function onMIDISuccess(midi) {
+	    var inputs = midi.inputs.values();
+	    for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+	      input.value.onmidimessage = this.onMIDIMessage;
+	    }
 	  },
-	
-	  logValue: function logValue(position) {
-	    var log = Math.exp(position * this.state.scale + this.state.minlval);
-	    return log;
+	  onMIDIFailure: function onMIDIFailure(error) {
+	    alert("No MIDI devices found. Sad :(");
 	  },
-	
-	  getDefaultValue: function getDefaultValue() {
-	    var value = (Math.log(this.props.default) - this.state.minlval) / this.state.scale;
-	    return value;
+	  onMIDIMessage: function onMIDIMessage(message) {
+	    this.props.onMessage(message.data);
 	  },
-	
 	  render: function render() {
-	    var label = React.createElement(
-	      "label",
-	      null,
-	      this.props.name
-	    );
-	    var slider = React.createElement("input", {
-	      type: "range",
-	      id: this.props.name,
-	      min: 0,
-	      max: 1,
-	      step: 1 / 128,
-	      defaultValue: this.getDefaultValue(),
-	      onChange: this.handleChange });
-	
-	    return React.createElement(
-	      "div",
-	      { className: "slider" },
-	      label,
-	      slider
-	    );
+	    return null;
 	  }
 	});
 	
-	module.exports = LogSlider;
+	module.exports = MidiInput;
 
 /***/ },
+/* 161 */,
 /* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -19999,7 +19930,115 @@
 	
 	var React = __webpack_require__(1);
 	
-	var LogSlider = __webpack_require__(161);
+	var LogSlider = __webpack_require__(164);
+	var LinSlider = __webpack_require__(162);
+	
+	var FilterPanel = React.createClass({
+	  displayName: 'FilterPanel',
+	  handleCutoffChange: function handleCutoffChange(newFreq) {
+	    this.props.onChange({ vcfCutoff: newFreq });
+	  },
+	  handleResonanceChange: function handleResonanceChange(newRes) {
+	    this.props.onChange({ vcfResonance: newRes });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'synthModule' },
+	      React.createElement(LogSlider, {
+	        name: 'cutoff',
+	        min: 20,
+	        max: 20000,
+	        onChange: this.handleCutoffChange,
+	        'default': this.props.cutoff }),
+	      React.createElement(LinSlider, {
+	        name: 'res',
+	        min: 1,
+	        max: 40,
+	        onChange: this.handleResonanceChange,
+	        'default': this.props.resonance })
+	    );
+	  }
+	});
+	
+	module.exports = FilterPanel;
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	// mostly taken from Stack Overflow, adapted for React
+	// http://stackoverflow.com/questions/846221/logarithmic-slider
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = React.createClass({
+	  displayName: "LogSlider",
+	
+	
+	  getInitialState: function getInitialState() {
+	    var minlval = Math.log(this.props.min);
+	    var maxlval = Math.log(this.props.max);
+	    var scale = maxlval - minlval;
+	    return {
+	      minlval: minlval,
+	      maxlval: maxlval,
+	      scale: scale
+	    };
+	  },
+	
+	  handleChange: function handleChange(event) {
+	    var value = this.logValue(event.target.value);
+	    this.props.onChange(value);
+	  },
+	
+	  logValue: function logValue(position) {
+	    var log = Math.exp(position * this.state.scale + this.state.minlval);
+	    return log;
+	  },
+	
+	  getDefaultValue: function getDefaultValue() {
+	    var value = (Math.log(this.props.default) - this.state.minlval) / this.state.scale;
+	    return value;
+	  },
+	
+	  render: function render() {
+	    var label = React.createElement(
+	      "label",
+	      null,
+	      this.props.name
+	    );
+	    var slider = React.createElement("input", {
+	      type: "range",
+	      id: this.props.name,
+	      min: 0,
+	      max: 1,
+	      step: 1 / 128,
+	      defaultValue: this.getDefaultValue(),
+	      onChange: this.handleChange });
+	
+	    return React.createElement(
+	      "div",
+	      { className: "slider" },
+	      label,
+	      slider
+	    );
+	  }
+	});
+	
+	module.exports = LogSlider;
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = __webpack_require__(164);
 	var LinSlider = __webpack_require__(162);
 	
 	var EnvelopePanel = React.createClass({
@@ -20024,45 +20063,7 @@
 	module.exports = EnvelopePanel;
 
 /***/ },
-/* 164 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(1);
-	
-	var MidiInput = React.createClass({
-	  displayName: "MidiInput",
-	  componentDidMount: function componentDidMount() {
-	    if (navigator.requestMIDIAccess) {
-	      navigator.requestMIDIAccess({
-	        sysex: false
-	      }).then(this.onMIDISuccess, this.onMIDIFailure);
-	    } else {
-	      alert("No MIDI support. Sad :(");
-	    }
-	  },
-	  onMIDISuccess: function onMIDISuccess(midi) {
-	    var inputs = midi.inputs.values();
-	    for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
-	      input.value.onmidimessage = this.onMIDIMessage;
-	    }
-	  },
-	  onMIDIFailure: function onMIDIFailure(error) {
-	    alert("No MIDI devices found. Sad :(");
-	  },
-	  onMIDIMessage: function onMIDIMessage(message) {
-	    this.props.onMessage(message.data);
-	  },
-	  render: function render() {
-	    return null;
-	  }
-	});
-	
-	module.exports = MidiInput;
-
-/***/ },
-/* 165 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
