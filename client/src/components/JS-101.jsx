@@ -1,6 +1,7 @@
 var React = require('react');
 
 var MidiInput = require('./MidiInput');
+var OscPanel = require('./OscPanel');
 var FilterPanel = require('./FilterPanel');
 var EnvelopePanel = require('./EnvelopePanel');
 var SynthEngine = require('./SynthEngine');
@@ -10,6 +11,7 @@ var JS101 = React.createClass({
   getInitialState() {
     return {
       notes: [],
+      vcoDetune: 0,
       vcfCutoff: 10000,
       vcfResonance: 10,
       envDecay: 1,
@@ -51,6 +53,9 @@ var JS101 = React.createClass({
       <div className="js101">
         <MidiInput 
           onMessage={this.handleMidiMessage}/>
+        <OscPanel
+          detune={this.state.vcoDetune} 
+          onChange={this.handleChange} />
         <FilterPanel 
           cutoff={this.state.vcfCutoff}
           resonance={this.state.vcfResonance}

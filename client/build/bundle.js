@@ -19758,6 +19758,7 @@
 	var React = __webpack_require__(1);
 	
 	var MidiInput = __webpack_require__(164);
+	var OscPanel = __webpack_require__(166);
 	var FilterPanel = __webpack_require__(160);
 	var EnvelopePanel = __webpack_require__(163);
 	var SynthEngine = __webpack_require__(165);
@@ -19767,6 +19768,7 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      notes: [],
+	      vcoDetune: 0,
 	      vcfCutoff: 10000,
 	      vcfResonance: 10,
 	      envDecay: 1,
@@ -19804,6 +19806,9 @@
 	      { className: 'js101' },
 	      React.createElement(MidiInput, {
 	        onMessage: this.handleMidiMessage }),
+	      React.createElement(OscPanel, {
+	        detune: this.state.vcoDetune,
+	        onChange: this.handleChange }),
 	      React.createElement(FilterPanel, {
 	        cutoff: this.state.vcfCutoff,
 	        resonance: this.state.vcfResonance,
@@ -20134,6 +20139,37 @@
 	});
 	
 	module.exports = SynthEngine;
+
+/***/ },
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var LinSlider = __webpack_require__(162);
+	
+	var OscPanel = React.createClass({
+	  displayName: 'OscPanel',
+	  handleDetuneChange: function handleDetuneChange(newDetune) {
+	    this.props.onChange({ vcoDetune: newDetune });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'synthModule' },
+	      React.createElement(LinSlider, {
+	        name: 'detune',
+	        min: -50,
+	        max: 50,
+	        'default': this.props.detune,
+	        onChange: this.handleDetuneChange })
+	    );
+	  }
+	});
+	
+	module.exports = OscPanel;
 
 /***/ }
 /******/ ]);
