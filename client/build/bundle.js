@@ -19757,6 +19757,7 @@
 	
 	var React = __webpack_require__(1);
 	
+	var MidiInput = __webpack_require__(164);
 	var FilterPanel = __webpack_require__(160);
 	var EnvelopePanel = __webpack_require__(163);
 	
@@ -19779,6 +19780,7 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'js101' },
+	      React.createElement(MidiInput, null),
 	      React.createElement(FilterPanel, {
 	        cutoff: this.state.vcfCutoff,
 	        resonance: this.state.vcfResonance,
@@ -19995,6 +19997,23 @@
 	});
 	
 	module.exports = EnvelopePanel;
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var MidiInput = React.createClass({
+	  displayName: 'MidiInput',
+	  render: function render() {
+	    return null;
+	  }
+	});
+	
+	module.exports = MidiInput;
 
 /***/ }
 /******/ ]);

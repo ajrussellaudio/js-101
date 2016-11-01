@@ -1,5 +1,6 @@
 var React = require('react');
 
+var MidiInput = require('./MidiInput');
 var FilterPanel = require('./FilterPanel');
 var EnvelopePanel = require('./EnvelopePanel');
 
@@ -23,13 +24,14 @@ var JS101 = React.createClass({
   render() {
     return (
       <div className="js101">
+        <MidiInput />
         <FilterPanel 
           cutoff={this.state.vcfCutoff}
           resonance={this.state.vcfResonance}
-          onChange={this.handleChange}/>
+          onChange={this.handleChange} />
         <EnvelopePanel 
           decay={this.state.envDecay}
-          onChange={this.handleChange}/>
+          onChange={this.handleChange} />
       </div>
     )
   }
