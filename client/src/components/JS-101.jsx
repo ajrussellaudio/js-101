@@ -10,7 +10,7 @@ var JS101 = React.createClass({
       note: 60,
       vcfCutoff: 10000,
       vcfResonance: 1,
-      envDecay: 0.1,
+      envDecay: 1,
       envMod: 0,
       level: 0
     }
@@ -27,8 +27,9 @@ var JS101 = React.createClass({
           cutoff={this.state.vcfCutoff}
           resonance={this.state.vcfResonance}
           onChange={this.handleChange}/>
-        <EnvelopePanel />
-
+        <EnvelopePanel 
+          decay={this.state.envDecay}
+          onChange={this.handleChange}/>
       </div>
     )
   }

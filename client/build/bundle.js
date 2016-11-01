@@ -19767,7 +19767,7 @@
 	      note: 60,
 	      vcfCutoff: 10000,
 	      vcfResonance: 1,
-	      envDecay: 0.1,
+	      envDecay: 1,
 	      envMod: 0,
 	      level: 0
 	    };
@@ -19783,7 +19783,9 @@
 	        cutoff: this.state.vcfCutoff,
 	        resonance: this.state.vcfResonance,
 	        onChange: this.handleChange }),
-	      React.createElement(EnvelopePanel, null)
+	      React.createElement(EnvelopePanel, {
+	        decay: this.state.envDecay,
+	        onChange: this.handleChange })
 	    );
 	  }
 	});
@@ -19975,11 +19977,19 @@
 	
 	var EnvelopePanel = React.createClass({
 	  displayName: 'EnvelopePanel',
+	  handleDecayChange: function handleDecayChange(newDecay) {
+	    this.props.onChange({ envDecay: newDecay });
+	  },
 	  render: function render() {
 	    return React.createElement(
 	      'div',
-	      null,
-	      'I am an envelope panel.'
+	      { className: 'synthModule' },
+	      React.createElement(LogSlider, {
+	        name: 'decay',
+	        min: 0.01,
+	        max: 10,
+	        'default': this.props.decay,
+	        onChange: this.handleDecayChange })
 	    );
 	  }
 	});
