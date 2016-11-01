@@ -1,13 +1,13 @@
 var React = require('react');
 
-var FilterPanel = require('./FilterPanel')
+var FilterPanel = require('./FilterPanel');
+var EnvelopePanel = require('./EnvelopePanel');
 
 var JS101 = React.createClass({
 
   getInitialState() {
     return {
       note: 60,
-      vcoWaveform: "sawtooth",
       vcfCutoff: 10000,
       vcfResonance: 1,
       envDecay: 0.1,
@@ -27,6 +27,7 @@ var JS101 = React.createClass({
           cutoff={this.state.vcfCutoff}
           resonance={this.state.vcfResonance}
           onChange={this.handleChange}/>
+        <EnvelopePanel />
 
       </div>
     )

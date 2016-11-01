@@ -19758,13 +19758,13 @@
 	var React = __webpack_require__(1);
 	
 	var FilterPanel = __webpack_require__(160);
+	var EnvelopePanel = __webpack_require__(163);
 	
 	var JS101 = React.createClass({
 	  displayName: 'JS101',
 	  getInitialState: function getInitialState() {
 	    return {
 	      note: 60,
-	      vcoWaveform: "sawtooth",
 	      vcfCutoff: 10000,
 	      vcfResonance: 1,
 	      envDecay: 0.1,
@@ -19782,7 +19782,8 @@
 	      React.createElement(FilterPanel, {
 	        cutoff: this.state.vcfCutoff,
 	        resonance: this.state.vcfResonance,
-	        onChange: this.handleChange })
+	        onChange: this.handleChange }),
+	      React.createElement(EnvelopePanel, null)
 	    );
 	  }
 	});
@@ -19960,6 +19961,23 @@
 	});
 	
 	module.exports = LinSlider;
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = __webpack_require__(161);
+	var LinSlider = __webpack_require__(162);
+	
+	var EnvelopePanel = React.createClass({
+	  displayName: 'EnvelopePanel'
+	});
+	
+	module.exports = EnvelopePanel;
 
 /***/ }
 /******/ ]);
