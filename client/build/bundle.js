@@ -19974,7 +19974,14 @@
 	var LinSlider = __webpack_require__(162);
 	
 	var EnvelopePanel = React.createClass({
-	  displayName: 'EnvelopePanel'
+	  displayName: 'EnvelopePanel',
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      null,
+	      'I am an envelope panel.'
+	    );
+	  }
 	});
 	
 	module.exports = EnvelopePanel;
