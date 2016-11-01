@@ -19757,11 +19757,11 @@
 	
 	var React = __webpack_require__(1);
 	
-	var MidiInput = __webpack_require__(164);
-	var OscPanel = __webpack_require__(166);
-	var FilterPanel = __webpack_require__(160);
-	var EnvelopePanel = __webpack_require__(163);
-	var SynthEngine = __webpack_require__(165);
+	var MidiInput = __webpack_require__(160);
+	var OscPanel = __webpack_require__(161);
+	var FilterPanel = __webpack_require__(163);
+	var EnvelopePanel = __webpack_require__(165);
+	var SynthEngine = __webpack_require__(166);
 	
 	var JS101 = React.createClass({
 	  displayName: 'JS101',
@@ -19828,109 +19828,70 @@
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var React = __webpack_require__(1);
 	
-	var LogSlider = __webpack_require__(161);
-	var LinSlider = __webpack_require__(162);
-	
-	var FilterPanel = React.createClass({
-	  displayName: 'FilterPanel',
-	  handleCutoffChange: function handleCutoffChange(newFreq) {
-	    this.props.onChange({ vcfCutoff: newFreq });
+	var MidiInput = React.createClass({
+	  displayName: "MidiInput",
+	  componentDidMount: function componentDidMount() {
+	    if (navigator.requestMIDIAccess) {
+	      navigator.requestMIDIAccess({
+	        sysex: false
+	      }).then(this.onMIDISuccess, this.onMIDIFailure);
+	    } else {
+	      alert("No MIDI support. Sad :(");
+	    }
 	  },
-	  handleResonanceChange: function handleResonanceChange(newRes) {
-	    this.props.onChange({ vcfResonance: newRes });
+	  onMIDISuccess: function onMIDISuccess(midi) {
+	    var inputs = midi.inputs.values();
+	    for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+	      input.value.onmidimessage = this.onMIDIMessage;
+	    }
+	  },
+	  onMIDIFailure: function onMIDIFailure(error) {
+	    alert("No MIDI devices found. Sad :(");
+	  },
+	  onMIDIMessage: function onMIDIMessage(message) {
+	    this.props.onMessage(message.data);
 	  },
 	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      { className: 'synthModule' },
-	      React.createElement(LogSlider, {
-	        name: 'cutoff',
-	        min: 20,
-	        max: 20000,
-	        onChange: this.handleCutoffChange,
-	        'default': this.props.cutoff }),
-	      React.createElement(LinSlider, {
-	        name: 'res',
-	        min: 1,
-	        max: 40,
-	        onChange: this.handleResonanceChange,
-	        'default': this.props.resonance })
-	    );
+	    return null;
 	  }
 	});
 	
-	module.exports = FilterPanel;
+	module.exports = MidiInput;
 
 /***/ },
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	
-	// mostly taken from Stack Overflow, adapted for React
-	// http://stackoverflow.com/questions/846221/logarithmic-slider
+	'use strict';
 	
 	var React = __webpack_require__(1);
 	
-	var LogSlider = React.createClass({
-	  displayName: "LogSlider",
+	var LinSlider = __webpack_require__(162);
 	
-	
-	  getInitialState: function getInitialState() {
-	    var minlval = Math.log(this.props.min);
-	    var maxlval = Math.log(this.props.max);
-	    var scale = maxlval - minlval;
-	    return {
-	      minlval: minlval,
-	      maxlval: maxlval,
-	      scale: scale
-	    };
+	var OscPanel = React.createClass({
+	  displayName: 'OscPanel',
+	  handleDetuneChange: function handleDetuneChange(newDetune) {
+	    this.props.onChange({ vcoDetune: newDetune });
 	  },
-	
-	  handleChange: function handleChange(event) {
-	    var value = this.logValue(event.target.value);
-	    this.props.onChange(value);
-	  },
-	
-	  logValue: function logValue(position) {
-	    var log = Math.exp(position * this.state.scale + this.state.minlval);
-	    return log;
-	  },
-	
-	  getDefaultValue: function getDefaultValue() {
-	    var value = (Math.log(this.props.default) - this.state.minlval) / this.state.scale;
-	    return value;
-	  },
-	
 	  render: function render() {
-	    var label = React.createElement(
-	      "label",
-	      null,
-	      this.props.name
-	    );
-	    var slider = React.createElement("input", {
-	      type: "range",
-	      id: this.props.name,
-	      min: 0,
-	      max: 1,
-	      step: 1 / 128,
-	      defaultValue: this.getDefaultValue(),
-	      onChange: this.handleChange });
-	
 	    return React.createElement(
-	      "div",
-	      { className: "slider" },
-	      label,
-	      slider
+	      'div',
+	      { className: 'synthModule' },
+	      React.createElement(LinSlider, {
+	        name: 'detune',
+	        min: -50,
+	        max: 50,
+	        'default': this.props.detune,
+	        onChange: this.handleDetuneChange })
 	    );
 	  }
 	});
 	
-	module.exports = LogSlider;
+	module.exports = OscPanel;
 
 /***/ },
 /* 162 */
@@ -20004,7 +19965,115 @@
 	
 	var React = __webpack_require__(1);
 	
-	var LogSlider = __webpack_require__(161);
+	var LogSlider = __webpack_require__(164);
+	var LinSlider = __webpack_require__(162);
+	
+	var FilterPanel = React.createClass({
+	  displayName: 'FilterPanel',
+	  handleCutoffChange: function handleCutoffChange(newFreq) {
+	    this.props.onChange({ vcfCutoff: newFreq });
+	  },
+	  handleResonanceChange: function handleResonanceChange(newRes) {
+	    this.props.onChange({ vcfResonance: newRes });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'synthModule' },
+	      React.createElement(LogSlider, {
+	        name: 'cutoff',
+	        min: 20,
+	        max: 20000,
+	        onChange: this.handleCutoffChange,
+	        'default': this.props.cutoff }),
+	      React.createElement(LinSlider, {
+	        name: 'res',
+	        min: 1,
+	        max: 40,
+	        onChange: this.handleResonanceChange,
+	        'default': this.props.resonance })
+	    );
+	  }
+	});
+	
+	module.exports = FilterPanel;
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	// mostly taken from Stack Overflow, adapted for React
+	// http://stackoverflow.com/questions/846221/logarithmic-slider
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = React.createClass({
+	  displayName: "LogSlider",
+	
+	
+	  getInitialState: function getInitialState() {
+	    var minlval = Math.log(this.props.min);
+	    var maxlval = Math.log(this.props.max);
+	    var scale = maxlval - minlval;
+	    return {
+	      minlval: minlval,
+	      maxlval: maxlval,
+	      scale: scale
+	    };
+	  },
+	
+	  handleChange: function handleChange(event) {
+	    var value = this.logValue(event.target.value);
+	    this.props.onChange(value);
+	  },
+	
+	  logValue: function logValue(position) {
+	    var log = Math.exp(position * this.state.scale + this.state.minlval);
+	    return log;
+	  },
+	
+	  getDefaultValue: function getDefaultValue() {
+	    var value = (Math.log(this.props.default) - this.state.minlval) / this.state.scale;
+	    return value;
+	  },
+	
+	  render: function render() {
+	    var label = React.createElement(
+	      "label",
+	      null,
+	      this.props.name
+	    );
+	    var slider = React.createElement("input", {
+	      type: "range",
+	      id: this.props.name,
+	      min: 0,
+	      max: 1,
+	      step: 1 / 128,
+	      defaultValue: this.getDefaultValue(),
+	      onChange: this.handleChange });
+	
+	    return React.createElement(
+	      "div",
+	      { className: "slider" },
+	      label,
+	      slider
+	    );
+	  }
+	});
+	
+	module.exports = LogSlider;
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = __webpack_require__(164);
 	var LinSlider = __webpack_require__(162);
 	
 	var EnvelopePanel = React.createClass({
@@ -20029,53 +20098,17 @@
 	module.exports = EnvelopePanel;
 
 /***/ },
-/* 164 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var React = __webpack_require__(1);
 	
-	var MidiInput = React.createClass({
-	  displayName: "MidiInput",
-	  componentDidMount: function componentDidMount() {
-	    if (navigator.requestMIDIAccess) {
-	      navigator.requestMIDIAccess({
-	        sysex: false
-	      }).then(this.onMIDISuccess, this.onMIDIFailure);
-	    } else {
-	      alert("No MIDI support. Sad :(");
-	    }
-	  },
-	  onMIDISuccess: function onMIDISuccess(midi) {
-	    var inputs = midi.inputs.values();
-	    for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
-	      input.value.onmidimessage = this.onMIDIMessage;
-	    }
-	  },
-	  onMIDIFailure: function onMIDIFailure(error) {
-	    alert("No MIDI devices found. Sad :(");
-	  },
-	  onMIDIMessage: function onMIDIMessage(message) {
-	    this.props.onMessage(message.data);
-	  },
-	  render: function render() {
-	    return null;
-	  }
-	});
-	
-	module.exports = MidiInput;
-
-/***/ },
-/* 165 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(1);
+	var OscBank = __webpack_require__(167);
 	
 	var SynthEngine = React.createClass({
-	  displayName: "SynthEngine",
+	  displayName: 'SynthEngine',
 	  getInitialState: function getInitialState() {
 	    return {
 	      frequency: 0,
@@ -20087,7 +20120,7 @@
 	  componentDidMount: function componentDidMount() {
 	    var audioContext = new window.AudioContext();
 	
-	    var oscillator = audioContext.createOscillator();
+	    var oscillator = new OscBank(audioContext);
 	    var filter = audioContext.createBiquadFilter();
 	    var outputAmp = audioContext.createGain();
 	
@@ -20100,8 +20133,9 @@
 	    filter.Q.value = this.props.params.vcfResonance;
 	
 	    oscillator.connect(filter);
-	    oscillator.type = "sawtooth";
-	    oscillator.frequency.value = this.state.frequency || 440;
+	    oscillator.setWaveform("sawtooth");
+	    oscillator.setFrequency(this.state.frequency || 440);
+	    oscillator.setDetune(this.props.params.vcoDetune);
 	    oscillator.start(audioContext.currentTime);
 	
 	    this.setState({
@@ -20113,14 +20147,18 @@
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	    var now = this.state.context.currentTime;
+	    this.updateOscillator(nextProps.params, now);
 	    this.updateNotePlaying(nextProps.params, now);
 	    this.updateFilter(nextProps.params, now);
 	    this.updateAmp(nextProps.params, now);
 	  },
+	  updateOscillator: function updateOscillator(params, now) {
+	    this.state.osc.setDetune(params.vcoDetune, now);
+	  },
 	  updateNotePlaying: function updateNotePlaying(params, now) {
 	    var lastNotePlayed = params.notes[params.notes.length - 1];
 	    var noteFrequency = this.midiNoteToHz(lastNotePlayed);
-	    this.state.osc.frequency.setValueAtTime(noteFrequency || 0, now);
+	    this.state.osc.setFrequency(noteFrequency || 0);
 	  },
 	  updateFilter: function updateFilter(params, now) {
 	    this.state.lpf.frequency.setValueAtTime(params.vcfCutoff, now);
@@ -20141,35 +20179,80 @@
 	module.exports = SynthEngine;
 
 /***/ },
-/* 166 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
 	var React = __webpack_require__(1);
 	
-	var LinSlider = __webpack_require__(162);
+	var OscBank = function (_React$Component) {
+	  _inherits(OscBank, _React$Component);
 	
-	var OscPanel = React.createClass({
-	  displayName: 'OscPanel',
-	  handleDetuneChange: function handleDetuneChange(newDetune) {
-	    this.props.onChange({ vcoDetune: newDetune });
-	  },
-	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      { className: 'synthModule' },
-	      React.createElement(LinSlider, {
-	        name: 'detune',
-	        min: -50,
-	        max: 50,
-	        'default': this.props.detune,
-	        onChange: this.handleDetuneChange })
-	    );
+	  function OscBank(context) {
+	    _classCallCheck(this, OscBank);
+	
+	    var _this = _possibleConstructorReturn(this, (OscBank.__proto__ || Object.getPrototypeOf(OscBank)).call(this, context));
+	
+	    _this.context = context;
+	    _this.oscillators = [context.createOscillator(), context.createOscillator()];
+	    return _this;
 	  }
-	});
 	
-	module.exports = OscPanel;
+	  _createClass(OscBank, [{
+	    key: 'setWaveform',
+	    value: function setWaveform(waveform) {
+	      this.oscillators.forEach(function (osc) {
+	        osc.type = waveform;
+	      });
+	    }
+	  }, {
+	    key: 'setFrequency',
+	    value: function setFrequency(freq, time) {
+	      if (!time) time = this.context.currentTime;
+	      this.oscillators.forEach(function (osc) {
+	        osc.frequency.setValueAtTime(freq, time);
+	      });
+	    }
+	  }, {
+	    key: 'setDetune',
+	    value: function setDetune(cents, time) {
+	      if (!time) time = this.context.currentTime;
+	      this.oscillators[0].detune.setValueAtTime(cents, time);
+	    }
+	  }, {
+	    key: 'connect',
+	    value: function connect(object) {
+	      this.oscillators.forEach(function (osc) {
+	        osc.connect(object);
+	      });
+	    }
+	  }, {
+	    key: 'start',
+	    value: function start() {
+	      this.oscillators.forEach(function (osc) {
+	        osc.start();
+	      });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return null;
+	    }
+	  }]);
+	
+	  return OscBank;
+	}(React.Component);
+	
+	module.exports = OscBank;
 
 /***/ }
 /******/ ]);
