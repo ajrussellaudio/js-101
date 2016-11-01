@@ -20084,14 +20084,17 @@
 	
 	    var oscillator = audioContext.createOscillator();
 	    var filter = audioContext.createBiquadFilter();
+	    var outputAmp = audioContext.createGain();
 	
-	    oscillator.connect(filter);
-	    filter.connect(audioContext.destination);
+	    outputAmp.connect(audioContext.destination);
+	    outputAmp.gain.value = this.props.params.level;
 	
+	    filter.connect(outputAmp);
 	    filter.type = "lowpass";
 	    filter.frequency.value = this.props.params.vcfCutoff;
 	    filter.Q.value = this.props.params.vcfResonance;
 	
+	    oscillator.connect(filter);
 	    oscillator.type = "sawtooth";
 	    oscillator.frequency.value = this.state.frequency || 440;
 	    oscillator.start(audioContext.currentTime);
@@ -20099,16 +20102,27 @@
 	    this.setState({
 	      context: audioContext,
 	      osc: oscillator,
-	      lpf: filter
+	      lpf: filter,
+	      amp: outputAmp
 	    });
 	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	    var now = this.state.context.currentTime;
-	    var notes = nextProps.params.notes.sort().reverse();
+	    this.updateNotePlaying(nextProps.params, now);
+	    this.updateFilter(nextProps.params, now);
+	    this.updateAmp(nextProps.params, now);
+	  },
+	  updateNotePlaying: function updateNotePlaying(params, now) {
+	    var notes = params.notes.sort().reverse();
 	    var noteFrequency = this.midiNoteToHz(notes[0]);
 	    this.state.osc.frequency.setValueAtTime(noteFrequency || 0, now);
-	    this.state.lpf.frequency.setValueAtTime(nextProps.params.vcfCutoff, now);
-	    this.state.lpf.Q.setValueAtTime(nextProps.params.vcfResonance, now);
+	  },
+	  updateFilter: function updateFilter(params, now) {
+	    this.state.lpf.frequency.setValueAtTime(params.vcfCutoff, now);
+	    this.state.lpf.Q.setValueAtTime(params.vcfResonance, now);
+	  },
+	  updateAmp: function updateAmp(params, now) {
+	    this.state.amp.gain.setValueAtTime(params.level, now);
 	  },
 	  midiNoteToHz: function midiNoteToHz(midiNote) {
 	    // Thanks, Wikipedia!
