@@ -19768,7 +19768,7 @@
 	    return {
 	      notes: [],
 	      vcfCutoff: 10000,
-	      vcfResonance: 1,
+	      vcfResonance: 10,
 	      envDecay: 1,
 	      envMod: 0,
 	      level: 0
@@ -19851,7 +19851,7 @@
 	      React.createElement(LinSlider, {
 	        name: 'res',
 	        min: 1,
-	        max: 10,
+	        max: 40,
 	        onChange: this.handleResonanceChange,
 	        'default': this.props.resonance })
 	    );
@@ -20065,21 +20065,50 @@
 /* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var React = __webpack_require__(1);
 	
 	var SynthEngine = React.createClass({
-	  displayName: 'SynthEngine',
+	  displayName: "SynthEngine",
 	  getInitialState: function getInitialState() {
 	    return {
-	      frequency: 0
+	      frequency: 0,
+	      osc: {},
+	      lpf: {},
+	      amp: {}
 	    };
 	  },
+	  componentDidMount: function componentDidMount() {
+	    var audioContext = new window.AudioContext();
+	
+	    var oscillator = audioContext.createOscillator();
+	    var filter = audioContext.createBiquadFilter();
+	
+	    oscillator.connect(filter);
+	    filter.connect(audioContext.destination);
+	
+	    filter.type = "lowpass";
+	    filter.frequency.value = this.props.params.vcfCutoff;
+	    filter.Q.value = this.props.params.vcfResonance;
+	
+	    oscillator.type = "sawtooth";
+	    oscillator.frequency.value = this.state.frequency || 440;
+	    oscillator.start(audioContext.currentTime);
+	
+	    this.setState({
+	      context: audioContext,
+	      osc: oscillator,
+	      lpf: filter
+	    });
+	  },
 	  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	    var notes = nextProps.params.notes.reverse();
+	    var now = this.state.context.currentTime;
+	    var notes = nextProps.params.notes.sort().reverse();
 	    var noteFrequency = this.midiNoteToHz(notes[0]);
-	    this.setState({ frequency: noteFrequency });
+	    this.state.osc.frequency.setValueAtTime(noteFrequency || 0, now);
+	    this.state.lpf.frequency.setValueAtTime(nextProps.params.vcfCutoff, now);
+	    this.state.lpf.Q.setValueAtTime(nextProps.params.vcfResonance, now);
 	  },
 	  midiNoteToHz: function midiNoteToHz(midiNote) {
 	    // Thanks, Wikipedia!

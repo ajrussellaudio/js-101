@@ -11,7 +11,7 @@ var JS101 = React.createClass({
     return {
       notes: [],
       vcfCutoff: 10000,
-      vcfResonance: 1,
+      vcfResonance: 10,
       envDecay: 1,
       envMod: 0,
       level: 0

@@ -25,7 +25,7 @@ var FilterPanel = React.createClass({
         <LinSlider 
           name="res"
           min={1}
-          max={10}
+          max={40}
           onChange={this.handleResonanceChange}
           default={this.props.resonance}/>
       </div>
