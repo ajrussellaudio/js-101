@@ -49,7 +49,7 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	
-	var JS101 = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./components/JS-101\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var JS101 = __webpack_require__(159);
 	
 	window.onload = function () {
 	  ReactDOM.render(React.createElement(JS101, null), document.getElementById('app'));
@@ -19748,6 +19748,232 @@
 	
 	module.exports = __webpack_require__(3);
 
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var FilterPanel = __webpack_require__(160);
+	
+	var JS101 = React.createClass({
+	  displayName: 'JS101',
+	  getInitialState: function getInitialState() {
+	    return {
+	      vco: {
+	        waveform: "sawtooth",
+	        note: 60
+	      },
+	      vcf: {
+	        cutoff: 10000,
+	        resonance: 1
+	      },
+	      env: {
+	        decay: 0.1,
+	        mod: 0
+	      },
+	      vca: {
+	        level: 0
+	      }
+	    };
+	  },
+	  handleFilterChange: function handleFilterChange(data) {
+	    console.log(data);
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'js101' },
+	      React.createElement(FilterPanel, {
+	        vcf: this.state.vcf,
+	        env: this.state.env,
+	        onChange: this.handleFilterChange })
+	    );
+	  }
+	});
+	
+	module.exports = JS101;
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = __webpack_require__(161);
+	var LinSlider = __webpack_require__(162);
+	
+	var FilterPanel = React.createClass({
+	  displayName: 'FilterPanel',
+	  getInitialState: function getInitialState() {
+	    return {
+	      cutoff: this.props.vcf.cutoff,
+	      resonance: this.props.vcf.resonance
+	    };
+	  },
+	  handleCutoffChange: function handleCutoffChange(newFreq) {
+	    this.setState({ cutoff: newFreq });
+	  },
+	  handleResonanceChange: function handleResonanceChange(newRes) {
+	    this.setState({ resonance: newRes });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { className: 'synthModule' },
+	      React.createElement(LogSlider, {
+	        name: 'cutoff',
+	        min: 20,
+	        max: 20000,
+	        onChange: this.handleCutoffChange,
+	        'default': this.state.cutoff }),
+	      React.createElement(LinSlider, {
+	        name: 'res',
+	        min: 1,
+	        max: 10,
+	        onChange: this.handleResonanceChange,
+	        'default': this.state.resonance })
+	    );
+	  }
+	});
+	
+	module.exports = FilterPanel;
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	// mostly taken from Stack Overflow, adapted for React
+	// http://stackoverflow.com/questions/846221/logarithmic-slider
+	
+	var React = __webpack_require__(1);
+	
+	var LogSlider = React.createClass({
+	  displayName: "LogSlider",
+	
+	
+	  getInitialState: function getInitialState() {
+	    var minlval = Math.log(this.props.min);
+	    var maxlval = Math.log(this.props.max);
+	    var scale = maxlval - minlval;
+	    return {
+	      minlval: minlval,
+	      maxlval: maxlval,
+	      scale: scale
+	    };
+	  },
+	
+	  handleChange: function handleChange(event) {
+	    var value = this.logValue(event.target.value);
+	    this.props.onChange(value);
+	  },
+	
+	  logValue: function logValue(position) {
+	    var log = Math.exp(position * this.state.scale + this.state.minlval);
+	    return log;
+	  },
+	
+	  getDefaultValue: function getDefaultValue() {
+	    var value = (Math.log(this.props.default) - this.state.minlval) / this.state.scale;
+	    return value;
+	  },
+	
+	  render: function render() {
+	    var label = React.createElement(
+	      "label",
+	      null,
+	      this.props.name
+	    );
+	    var slider = React.createElement("input", {
+	      type: "range",
+	      id: this.props.name,
+	      min: 0,
+	      max: 1,
+	      step: 1 / 128,
+	      defaultValue: this.getDefaultValue(),
+	      onChange: this.handleChange });
+	
+	    return React.createElement(
+	      "div",
+	      { className: "slider" },
+	      label,
+	      slider
+	    );
+	  }
+	});
+	
+	module.exports = LogSlider;
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(1);
+	
+	var LinSlider = React.createClass({
+	  displayName: "LinSlider",
+	
+	
+	  getInitialState: function getInitialState() {
+	    var max = this.props.max;
+	    var min = this.props.min;
+	    var scale = max - min;
+	    return {
+	      max: max,
+	      min: min,
+	      scale: scale
+	    };
+	  },
+	
+	  handleChange: function handleChange(event) {
+	    var value = this.linValue(event.target.value);
+	    this.props.onChange(value);
+	  },
+	
+	  linValue: function linValue(position) {
+	    var lin = position * this.state.scale + this.state.min;
+	    return lin;
+	  },
+	
+	  getDefaultValue: function getDefaultValue() {
+	    var value = (this.props.default - this.state.min) / this.state.scale;
+	    return value;
+	  },
+	
+	  render: function render() {
+	    var label = React.createElement(
+	      "label",
+	      null,
+	      this.props.name
+	    );
+	    var slider = React.createElement("input", {
+	      type: "range",
+	      id: this.props.name,
+	      min: 0,
+	      max: 1,
+	      step: 1 / 128,
+	      defaultValue: this.getDefaultValue(),
+	      onChange: this.handleChange });
+	
+	    return React.createElement(
+	      "div",
+	      { className: "slider" },
+	      label,
+	      slider
+	    );
+	  }
+	});
+	
+	module.exports = LinSlider;
 
 /***/ }
 /******/ ]);

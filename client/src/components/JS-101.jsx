@@ -22,13 +22,18 @@ var JS101 = React.createClass({
         level: 0
       }
     }
-  }
+  },
+
+  handleFilterChange( data ) {
+    console.log(data)
+  },
 
   render() {
     return (
       <div className="js101">
         <FilterPanel 
-          defaults={this.state.vcf}
+          vcf={this.state.vcf}
+          env={this.state.env}
           onChange={this.handleFilterChange}/>
       </div>
     )
