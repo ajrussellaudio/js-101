@@ -3,6 +3,7 @@ var React = require('react');
 var MidiInput = require('./MidiInput');
 var FilterPanel = require('./FilterPanel');
 var EnvelopePanel = require('./EnvelopePanel');
+var SynthEngine = require('./SynthEngine');
 
 var JS101 = React.createClass({
 
@@ -57,6 +58,8 @@ var JS101 = React.createClass({
         <EnvelopePanel 
           decay={this.state.envDecay}
           onChange={this.handleChange} />
+        <SynthEngine
+          />
       </div>
     )
   }

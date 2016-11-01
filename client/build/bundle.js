@@ -19760,6 +19760,7 @@
 	var MidiInput = __webpack_require__(164);
 	var FilterPanel = __webpack_require__(160);
 	var EnvelopePanel = __webpack_require__(163);
+	var SynthEngine = __webpack_require__(165);
 	
 	var JS101 = React.createClass({
 	  displayName: 'JS101',
@@ -19809,7 +19810,8 @@
 	        onChange: this.handleChange }),
 	      React.createElement(EnvelopePanel, {
 	        decay: this.state.envDecay,
-	        onChange: this.handleChange })
+	        onChange: this.handleChange }),
+	      React.createElement(SynthEngine, null)
 	    );
 	  }
 	});
@@ -20057,6 +20059,23 @@
 	});
 	
 	module.exports = MidiInput;
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var SynthEngine = React.createClass({
+	  displayName: 'SynthEngine',
+	  render: function render() {
+	    return null;
+	  }
+	});
+	
+	module.exports = SynthEngine;
 
 /***/ }
 /******/ ]);
