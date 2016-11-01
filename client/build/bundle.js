@@ -20113,8 +20113,8 @@
 	    this.updateAmp(nextProps.params, now);
 	  },
 	  updateNotePlaying: function updateNotePlaying(params, now) {
-	    var notes = params.notes.sort().reverse();
-	    var noteFrequency = this.midiNoteToHz(notes[0]);
+	    var lastNotePlayed = params.notes[params.notes.length - 1];
+	    var noteFrequency = this.midiNoteToHz(lastNotePlayed);
 	    this.state.osc.frequency.setValueAtTime(noteFrequency || 0, now);
 	  },
 	  updateFilter: function updateFilter(params, now) {
