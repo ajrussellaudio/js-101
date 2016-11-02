@@ -1,0 +1,16 @@
+.slider {
+  display: inline-block;
+  padding: 0 5px;
+}
+
+.slider input {
+  width: 10px;
+  height: 200px;
+  -webkit-appearance: slider-vertical;
+}
+
+.slider label {
+  font-family: "Roboto Condensed";
+  text-transform: uppercase;
+  display: block;
+}

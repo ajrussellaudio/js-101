@@ -5,13 +5,6 @@ class OscBank extends React.Component{
   constructor(context) {
     super(context);
     this.context = context;
-
-    // const oscillators = [ context.createOscillator(), context.createOscillator() ] // CHEATING
-
-    // const oscillators = new Array(2).fill( context.createOscillator() ); // two references to same osc
-
-    const oscillators = Array(null,null).map( () => context.createOscillator() ); // [] length: 2
-
     this.oscillators = [];
     this.addOscillators(2);
   }
@@ -42,9 +35,7 @@ class OscBank extends React.Component{
 
   start( time ) {
     if(!time) time = this.context.currentTime;
-    // this.oscillators.forEach( osc => osc.start(time) );
-    this.oscillators[0].start();
-    this.oscillators[1].start();
+    this.oscillators.forEach( osc => osc.start(time) );
   }
 
   render() {

@@ -1,31 +1,16 @@
 body {
   font-family: "Futura";
-  color: #566270;
+  color: #1e2022;
+  background-color: #D9D4CF;
 }
 
 .synthModule {
   margin: 10px;
   display: inline-block;
   padding: 10px 20px;
-  background-color: #E0E3DA;
+  background-color: #4ea1d3;
   border-radius: 10px;
-  box-shadow: 3px 3px 5px #888888;
+  box-shadow: 3px 3px 5px rgba(88,88,88,75);
   text-align: center;
 }
 
-.slider {
-  display: inline-block;
-  padding: 0 5px;
-}
-
-.slider input {
-  width: 10px;
-  height: 200px;
-  -webkit-appearance: slider-vertical;
-}
-
-.slider label {
-  font-family: "Roboto Condensed";
-  text-transform: uppercase;
-  display: block;
-}
